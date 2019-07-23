@@ -1,0 +1,6 @@
+kafka:
+  bootstrapServers:
+    - localhost:9092
+  topic: default
+  groupId: default
+outputFile: ratings.txt

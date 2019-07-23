@@ -63,3 +63,4 @@ kafka
 config.yml
 pipeline/brexit-results.txt
 tweets.txt
+ratings.txt

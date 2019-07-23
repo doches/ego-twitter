@@ -8,9 +8,10 @@ import java.io.IOException;
 import org.immutables.value.Value;
 
 @Value.Immutable
-//@JsonDeserialize(as = ImmutableConfiguration.class)
+@JsonDeserialize(as = ImmutableConfiguration.class)
 public abstract class Configuration {
     public abstract KafkaConfiguration getKafka();
+    public abstract String getInputFile();
 
     public static Configuration read(String path) throws IOException {
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());

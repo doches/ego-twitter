@@ -3,7 +3,6 @@ package net.texasexpat.ego;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -34,6 +33,7 @@ public class Consumer {
             configuration = Configuration.read(args[0]);
         } catch (IOException x) {
             logger.error("Could not read configuration", x);
+            System.exit(1);
         }
 
         Properties properties = new Properties();
@@ -42,13 +42,14 @@ public class Consumer {
         properties.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         properties.put("group.id", configuration.getKafka().getGroupId());
 
-        String outputFile = args.length > 0 ? args[0] : "ratings.txt";
+        String outputFile = configuration.getOutputFile();
 
         EntitySentimentExtractor extractor = new EntitySentimentExtractor();
 
         Map<String, Pair<Integer, Double>> sentiments = Maps.newHashMap();
 
         if (Files.exists(Path.of(outputFile))) {
+            logger.debug("Reading existing ratings from " + outputFile);
             IOUtils.readLines(outputFile).forEach(line -> {
                 if (line.strip().length() > 0) {
                     String[] components = line.split("\t");
@@ -65,12 +66,17 @@ public class Consumer {
             kafkaConsumer.subscribe(topics);
             while (true) {
                 ConsumerRecords<Integer, String> records = kafkaConsumer.poll(Duration.of(60, ChronoUnit.SECONDS));
+                int index = 0;
                 for (ConsumerRecord record : records) {
                     List<EntitySentimentRating> ratings = extractor.apply(record.value().toString()).stream()
                             .filter(rating -> rating.getEntityType().equalsIgnoreCase("person")
                                     && rating.getConfidence() > 0.5).collect(Collectors.toList());
+                    index++;
+                    if (index % 25 == 0) {
+                        writeRatings(outputFile, sentiments);
+                    }
                     if (ratings.size() > 0) {
-                        logger.debug(String.format("Extracted sentimate ratings for %d documents", ratings.size()));
+                        logger.debug(String.format("Extracted sentiment ratings for %d documents", ratings.size()));
                     } else {
                         continue;
                     }
@@ -86,25 +92,30 @@ public class Consumer {
                     }
                 }
 
-                Map<Double, String> lines = Maps.newHashMap();
-                for (Map.Entry<String, Pair<Integer, Double>> entry : sentiments.entrySet()) {
-                    double sentiment = entry.getValue().getRight() / entry.getValue().getLeft();
-                    lines.put(sentiment, String.format("%s\t%.2f\t%d", entry.getKey(), sentiment, entry.getValue().getLeft()));
-                }
-
-                List<String> sorted = lines.entrySet().stream()
-                        .sorted(Comparator.comparing(Map.Entry::getKey))
-                        .map(Map.Entry::getValue)
-                        .collect(Collectors.toList());
-
-                IOUtils.writeStringToFile(
-                        String.join("\n", Lists.reverse(sorted)),
-                        outputFile,
-                        "utf-8"
-                        );
+                writeRatings(outputFile, sentiments);
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
+    }
+
+    private static void writeRatings(String outputFile, Map<String, Pair<Integer, Double>> sentiments) throws IOException {
+        logger.debug("Saving sentiment ratings to " + outputFile);
+        Map<Integer, String> lines = Maps.newHashMap();
+        for (Map.Entry<String, Pair<Integer, Double>> entry : sentiments.entrySet()) {
+            double sentiment = entry.getValue().getRight() / entry.getValue().getLeft();
+            lines.put(entry.getValue().getLeft(), String.format("%s\t%.2f\t%d", entry.getKey(), sentiment, entry.getValue().getLeft()));
+        }
+
+        List<String> sorted = lines.entrySet().stream()
+                .sorted(Comparator.comparing(Map.Entry::getKey))
+                .map(Map.Entry::getValue)
+                .collect(Collectors.toList());
+
+        IOUtils.writeStringToFile(
+                String.join("\n", Lists.reverse(sorted)),
+                outputFile,
+                "utf-8"
+        );
     }
 }

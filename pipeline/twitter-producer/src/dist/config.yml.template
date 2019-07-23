@@ -11,3 +11,5 @@ kafka:
 delayMs: 60000
 cacheDuplicateTweetCount: 1000
 splitToFile: tweets.txt
+keywords:
+  - unicorns

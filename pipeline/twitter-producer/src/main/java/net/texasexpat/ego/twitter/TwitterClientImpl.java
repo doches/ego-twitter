@@ -73,7 +73,9 @@ public class TwitterClientImpl implements TwitterClient {
             JsonNode tree = mapper.readTree(body);
             for(Iterator<JsonNode> iter = tree.get("statuses").elements(); iter.hasNext(); ) {
                 JsonNode statusNode = iter.next();
-                logger.debug(statusNode.toString());
+                if (statusNode.has("retweeted_status")) {
+                    statusNode = statusNode.get("retweeted_status");
+                }
                 String fullText = statusNode.get("full_text").asText();
                 tweets.add(fullText);
             }

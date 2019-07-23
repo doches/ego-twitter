@@ -11,6 +11,7 @@ import org.immutables.value.Value;
 @JsonDeserialize(as = ImmutableConfiguration.class)
 public abstract class Configuration {
     public abstract KafkaConfiguration getKafka();
+    public abstract String getOutputFile();
 
     public static Configuration read(String path) throws IOException {
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());

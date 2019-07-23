@@ -2,6 +2,7 @@ dependencies {
     compile "org.apache.kafka:kafka_2.12:$kafkaVersion"
     compile "commons-io:commons-io:$commonsIOVersion"
     compile "javax.activation:activation:$javaxActivationVersion"
+    compile "ch.qos.logback:logback-classic:$logbackVersion"
     compileOnly "javax.annotation:javax.annotation-api:$annotationVersion"
     compileOnly "org.immutables:value-annotations:$immutablesVersion"
     annotationProcessor "org.immutables:value:$immutablesVersion"

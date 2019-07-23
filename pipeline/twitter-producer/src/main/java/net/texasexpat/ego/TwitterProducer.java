@@ -1,16 +1,15 @@
 package net.texasexpat.ego;
 
 import com.google.common.collect.ImmutableList;
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
+import com.google.common.collect.Queues;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayDeque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Queue;
 import java.util.stream.Collectors;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.glassfish.jersey.internal.guava.Sets;
@@ -49,17 +48,20 @@ public class TwitterProducer {
         properties.put("bootstrap.servers", Strings.join(configuration.getKafka().getBootstrapServers(), ","));
         properties.put("key.serializer", "org.apache.kafka.common.serialization.IntegerSerializer");
         properties.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        properties.put("group.id", configuration.getKafka().getGroupId());
 
         try (KafkaProducer<Integer, String> kafkaProducer = new KafkaProducer<>(properties)) {
+            Queue<String> keywordRotation = new ArrayDeque<>(configuration.getKeywords());
             while (true) {
-                List<String> tweets = twitter.fetch(ImmutableList.of("brexit"))
+                String keyword = keywordRotation.poll();
+                keywordRotation.add(keyword);
+                List<String> tweets = twitter.fetch(ImmutableList.of(keyword))
                         .stream()
                         .filter(tweet -> !seenTweets.contains(tweet))
                         .map(tweet -> tweet.replaceAll("\n", " "))
+                        .distinct()
                         .collect(Collectors.toList());
                 if (tweets.size() > 0) {
-                    logger.debug(String.format("Fetched %d new tweets", tweets.size()));
+                    logger.info(String.format("Fetched %d new tweets", tweets.size()));
                 }
                 tweets.forEach(tweet -> {
                     logger.debug(tweet);
