@@ -3,6 +3,9 @@ package net.texasexpat.ego;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
@@ -35,15 +38,17 @@ public class Consumer {
 
         Map<String, Pair<Integer, Double>> sentiments = Maps.newHashMap();
 
-        IOUtils.readLines(outputFile).forEach(line -> {
-            if (line.strip().length() > 0) {
-                String components[] = line.split("\t");
-                String name = components[0];
-                Double mean = Double.valueOf(components[1]);
-                Integer count = Integer.valueOf(components[2]);
-                sentiments.put(name, Pair.of(count, mean * count));
-            }
-        });
+        if (Files.exists(Path.of(outputFile))) {
+            IOUtils.readLines(outputFile).forEach(line -> {
+                if (line.strip().length() > 0) {
+                    String[] components = line.split("\t");
+                    String name = components[0];
+                    Double mean = Double.valueOf(components[1]);
+                    Integer count = Integer.valueOf(components[2]);
+                    sentiments.put(name, Pair.of(count, mean * count));
+                }
+            });
+        }
 
         try (KafkaConsumer<Integer, String> kafkaConsumer = new KafkaConsumer<>(properties)) {
             List<String> topics = ImmutableList.of("brexit-twitter");
