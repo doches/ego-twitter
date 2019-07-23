@@ -1,0 +1,16 @@
+plugins {
+    id "idea"
+}
+
+subprojects {
+    apply plugin: "java"
+
+    group = "net.texasexpat.ego"
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        testImplementation "junit:junit:4.12"
+    }
+}

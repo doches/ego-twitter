@@ -1,0 +1,61 @@
+# IntelliJ
+*.iml
+*.ipr
+*.iws
+*.ids
+.idea/
+.ideaDataSources/
+dataSources/
+
+# Eclipse
+.classpath
+.checkstyle
+.factorypath
+.project
+.settings
+*.launch
+
+# Codegen
+.generated
+.apt_generated
+generated_src/
+**/src/generated/
+
+# Visual Studio Code
+.vscode/*
+
+# OS X
+.DS_Store
+
+# Java
+*.class
+
+# Build Systems
+.gradle/
+bin/
+build/
+out/
+
+# Log Files
+*/var/log/
+
+# Node
+node_modules/
+npm-debug.log
+
+# SublimeText + TextMate + Vim
+*.sublime-workspace
+*.sublime-project
+*.tmproj
+*.tmproject
+*.sw[op]
+
+# Dev-specific files
+
+lib/
+log/*
+*.log
+*.tgz
+kafka/
+kafka_2.12-2.2.0/
+kafka

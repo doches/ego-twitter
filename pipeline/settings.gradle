@@ -1,0 +1,3 @@
+rootProject.name = "pipeline"
+include "pipeline-consumer", "pipeline-models", "pipeline-producer", "entity-sentiment-extractor"
+

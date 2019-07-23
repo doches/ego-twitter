@@ -1,0 +1,9 @@
+dependencies {
+    compileOnly "javax.annotation:javax.annotation-api:$annotationVersion"
+    compileOnly "org.immutables:value-annotations:$immutablesVersion"
+    annotationProcessor "org.immutables:value:$immutablesVersion"
+}
+
+compileJava {
+    options.annotationProcessorPath = configurations.annotationProcessor
+}

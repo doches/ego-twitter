@@ -1,0 +1,13 @@
+apply plugin: "application"
+
+mainClassName = "net.texasexpat.ego.Consumer"
+
+dependencies {
+    compile "org.apache.kafka:kafka_2.12:$kafkaVersion"
+    compile "com.google.guava:guava:$guavaVersion"
+    compile "ch.qos.logback:logback-classic:$logbackVersion"
+    compile "org.slf4j:slf4j-api:$slf4jVersion"
+
+    implementation project(":entity-sentiment-extractor")
+    implementation project(":pipeline-models")
+}

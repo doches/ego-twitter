@@ -1,0 +1,10 @@
+apply plugin: "application"
+
+mainClassName = "net.texasexpat.ego.DemoProducer"
+
+dependencies {
+    compile "org.apache.kafka:kafka_2.12:$kafkaVersion"
+    compile "commons-io:commons-io:$commonsIOVersion"
+    compile "ch.qos.logback:logback-classic:$logbackVersion"
+    compile "org.slf4j:slf4j-api:$slf4jVersion"
+}
