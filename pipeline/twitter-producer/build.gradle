@@ -8,6 +8,7 @@ dependencies {
     compile "ch.qos.logback:logback-classic:$logbackVersion"
     compile "org.slf4j:slf4j-api:$slf4jVersion"
     compile "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion"
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion"
     compile "com.fasterxml.jackson:jackson-base:$jacksonVersion"
     compile "org.glassfish.jersey.core:jersey-client:$jerseyVersion"
     compile "org.glassfish.jersey.core:jersey-common:$jerseyVersion"
@@ -17,6 +18,8 @@ dependencies {
     compileOnly "javax.annotation:javax.annotation-api:$annotationVersion"
     compileOnly "org.immutables:value-annotations:$immutablesVersion"
     annotationProcessor "org.immutables:value:$immutablesVersion"
+
+    implementation project(":pipeline-models")
 }
 
 compileJava {

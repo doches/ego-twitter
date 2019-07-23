@@ -6,5 +6,8 @@ twitter:
 kafka:
   bootstrapServers:
     - localhost:9092
+  topic: default
+  groupId: default
 delayMs: 60000
 cacheDuplicateTweetCount: 1000
+splitToFile: tweets.txt

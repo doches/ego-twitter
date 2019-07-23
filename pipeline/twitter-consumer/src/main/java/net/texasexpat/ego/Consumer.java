@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -21,16 +22,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import edu.stanford.nlp.io.IOUtils;
+import joptsimple.internal.Strings;
+import net.texasexpat.ego.config.Configuration;
 
 public class Consumer {
     static Logger logger = LoggerFactory.getLogger(Consumer.class.getCanonicalName());
 
     public static void main(String[] args) {
+        Configuration configuration = null;
+        try {
+            configuration = Configuration.read(args[0]);
+        } catch (IOException x) {
+            logger.error("Could not read configuration", x);
+        }
+
         Properties properties = new Properties();
-        properties.put("bootstrap.servers", "localhost:9092");
+        properties.put("bootstrap.servers", Strings.join(configuration.getKafka().getBootstrapServers(), ","));
         properties.put("key.deserializer", "org.apache.kafka.common.serialization.IntegerDeserializer");
         properties.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        properties.put("group.id", "brexit-twitter");
+        properties.put("group.id", configuration.getKafka().getGroupId());
 
         String outputFile = args.length > 0 ? args[0] : "ratings.txt";
 
@@ -51,7 +61,7 @@ public class Consumer {
         }
 
         try (KafkaConsumer<Integer, String> kafkaConsumer = new KafkaConsumer<>(properties)) {
-            List<String> topics = ImmutableList.of("brexit-twitter");
+            List<String> topics = ImmutableList.of(configuration.getKafka().getTopic());
             kafkaConsumer.subscribe(topics);
             while (true) {
                 ConsumerRecords<Integer, String> records = kafkaConsumer.poll(Duration.of(60, ChronoUnit.SECONDS));

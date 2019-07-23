@@ -7,7 +7,16 @@ dependencies {
     compile "com.google.guava:guava:$guavaVersion"
     compile "ch.qos.logback:logback-classic:$logbackVersion"
     compile "org.slf4j:slf4j-api:$slf4jVersion"
+    compile "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion"
+    compile "com.fasterxml.jackson:jackson-base:$jacksonVersion"
+    compileOnly "javax.annotation:javax.annotation-api:$annotationVersion"
+    compileOnly "org.immutables:value-annotations:$immutablesVersion"
+    annotationProcessor "org.immutables:value:$immutablesVersion"
 
     implementation project(":entity-sentiment-extractor")
     implementation project(":pipeline-models")
+}
+
+compileJava {
+    options.annotationProcessorPath = configurations.annotationProcessor
 }

@@ -9,4 +9,6 @@ import org.immutables.value.Value;
 @Value.Style(jdkOnly = true)
 public abstract class KafkaConfiguration {
     public abstract List<String> getBootstrapServers();
+    public abstract String getTopic();
+    public abstract String getGroupId();
 }

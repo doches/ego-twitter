@@ -3,3 +3,5 @@ include "pipeline-models"
 include "entity-sentiment-extractor"
 include "twitter-producer"
 include "twitter-consumer"
+include 'file-producer'
+
