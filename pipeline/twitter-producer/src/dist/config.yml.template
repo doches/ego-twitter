@@ -1,0 +1,10 @@
+twitter:
+  token:
+  secret:
+  consumerKey:
+  consumerSecret:
+kafka:
+  bootstrapServers:
+    - localhost:9092
+delayMs: 60000
+cacheDuplicateTweetCount: 1000
